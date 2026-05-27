@@ -681,21 +681,70 @@
         }
       });
       
-      // 5. Contact Form Submission Simulation
+      // 5. Contact Form Submission with Web3Forms
       const contactForm = document.getElementById('contact-form');
       contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const name = document.getElementById('form-name').value;
+        const phone = document.getElementById('form-phone').value;
+        const message = document.getElementById('form-message').value;
         
-        // Show simulated Success Feedback
-        if (currentLang === 'en') {
-          alert(`Thank you, ${name}! Your admission query has been successfully received. We will contact you shortly on your phone.`);
-        } else {
-          alert(`धन्यवाद, ${name}! आपकी प्रवेश पूछताछ सफलतापूर्वक प्राप्त हो गई है। हम जल्द ही आपके फोन नंबर पर आपसे संपर्क करेंगे।`);
+        // Change this Access Key with your actual Web3Forms access key
+        // You can get one for free at https://web3forms.com
+        const web3formsAccessKey = "YOUR_ACCESS_KEY_HERE"; 
+        
+        // If the access key is not set yet, show warning
+        if (web3formsAccessKey === "YOUR_ACCESS_KEY_HERE") {
+          const warnMsg = currentLang === 'en' 
+            ? "Please configure your Web3Forms Access Key in the script before submitting."
+            : "कृपया सबमिट करने से पहले स्क्रिप्ट में अपना Web3Forms एक्सेस की (Access Key) कॉन्फ़िगर करें।";
+          alert(warnMsg);
+          return;
         }
-        
-        contactForm.reset();
+
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalBtnHTML = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = currentLang === 'en' ? '<i class="fa-solid fa-spinner fa-spin"></i> Sending...' : '<i class="fa-solid fa-spinner fa-spin"></i> भेजा जा रहा है...';
+
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            access_key: web3formsAccessKey,
+            name: name,
+            phone: phone,
+            message: message,
+            from_name: "Ambika Academy Website Inquiry"
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Show Success Feedback
+            if (currentLang === 'en') {
+              alert(`Thank you, ${name}! Your admission query has been successfully sent to the school. We will contact you shortly.`);
+            } else {
+              alert(`धन्यवाद, ${name}! आपकी प्रवेश पूछताछ सफलतापूर्वक स्कूल को भेज दी गई है। हम जल्द ही आपसे संपर्क करेंगे।`);
+            }
+            contactForm.reset();
+          } else {
+            alert(currentLang === 'en' ? "Something went wrong. Please try again." : "कुछ गलत हो गया। कृपया पुन: प्रयास करें।");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert(currentLang === 'en' ? "Failed to connect to form server. Please check your internet connection." : "फ़ॉर्म सर्वर से कनेक्शन विफल रहा। कृपया अपना इंटरनेट कनेक्शन जांचें।");
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHTML;
+        });
       });
       
     });
