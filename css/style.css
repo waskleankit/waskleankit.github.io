@@ -251,7 +251,7 @@ header.scrolled .logo-img {
   padding: 0 1.5rem;
 }
 
-/* Overlay for contrast */
+/* Overlay for contrast - lightened to highlight background image */
 .hero::before {
   content: '';
   position: absolute;
@@ -259,7 +259,7 @@ header.scrolled .logo-img {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 58, 138, 0.7) 100%);
+  background: rgba(15, 23, 42, 0.35); /* Translucent overlay to highlight school image */
   z-index: 1;
 }
 
@@ -269,6 +269,12 @@ header.scrolled .logo-img {
   max-width: 850px;
   text-align: center;
   animation: fadeInUp 1s ease-out;
+  background: rgba(15, 23, 42, 0.88); /* Opaque solid slate glass for text readability */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
 }
 
 .hero-badge {
